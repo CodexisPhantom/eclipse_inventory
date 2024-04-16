@@ -105,6 +105,8 @@ local function loadInventoryData(data, player)
 			data.type = 'glovebox'
 		elseif data.id:find('^trunk') then
 			data.type = 'trunk'
+		elseif data.id:find('^clothing') then
+			data.type = 'clothing'
 		elseif data.id:find('^evidence-') then
 			data.type = 'policeevidence'
 		end
@@ -173,6 +175,8 @@ local function loadInventoryData(data, player)
 		end
 	elseif data.type == 'policeevidence' then
 		inventory = Inventory.Create(data.id, locale('police_evidence'), data.type, 100, 0, 100000, false)
+	elseif data.type == 'clothing' then
+		inventory = Inventory.Create(data.id, 'Vêtements', data.type, 17, 0, 100000, false)
 	else
 		local stash = RegisteredStashes[data.id]
 
@@ -973,7 +977,7 @@ function Inventory.SetMetadata(inv, slotId, metadata)
         inv.weight += slot.weight
     end
 
-    if metadata.durability ~= slot.metadata.durability then
+    if metadata.durability and (metadata.durability ~= slot.metadata.durability) then
         Items.UpdateDurability(inv, slot, item, metadata.durability)
     else
         inv:syncSlotsWithClients({
@@ -988,7 +992,7 @@ function Inventory.SetMetadata(inv, slotId, metadata)
         server.syncInventory(inv)
     end
 
-    if metadata.imageurl ~= imageurl and Utils.IsValidImageUrl then
+    if metadata.imageurl and (metadata.imageurl ~= imageurl and Utils.IsValidImageUrl) then
         if Utils.IsValidImageUrl(metadata.imageurl) then
             Utils.DiscordEmbed('Valid image URL', ('Updated item "%s" (%s) with valid url in "%s".\n%s\nid: %s\nowner: %s'):format(metadata.label or slot.label, slot.name, inv.label, metadata.imageurl, inv.id, inv.owner, metadata.imageurl), metadata.imageurl, 65280)
         else
@@ -1575,6 +1579,74 @@ local function dropItem(source, playerInventory, fromData, data)
 	}
 end
 
+---@param source number
+---@param playerInventory OxInventory
+---@param clothesInventory OxInventory
+---@param fromData SlotWithItem?
+---@param data SwapSlotData
+local function dropClothes(source, playerInventory, clothesInventory, fromData, data)
+    if not fromData then return end
+
+	local toData = table.clone(fromData)
+	toData.slot = data.toSlot
+	toData.count = data.count
+	toData.weight = Inventory.SlotWeight(Items(toData.name), toData)
+
+    if toData.weight > shared.playerweight then return end
+
+	if not TriggerEventHooks('swapItems', {
+		source = source,
+		fromInventory = clothesInventory.id,
+		fromSlot = fromData,
+		fromType = clothesInventory.type,
+		toInventory = 'newdrop',
+		toSlot = data.toSlot,
+		toType = 'drop',
+		count = data.count,
+        action = 'move',
+	}) then return end
+
+    fromData.count -= data.count
+    fromData.weight = Inventory.SlotWeight(Items(fromData.name), fromData)
+
+    if fromData.count < 1 then
+        fromData = nil
+    else
+        toData.metadata = table.clone(toData.metadata)
+    end
+
+	local slot = data.fromSlot
+	clothesInventory.weight -= toData.weight
+	clothesInventory.items[slot] = fromData
+
+	local dropId = generateInvId('drop')
+	local inventory = Inventory.Create(dropId, ('Drop %s'):format(dropId:gsub('%D', '')), 'drop', shared.playerslots, toData.weight, shared.playerweight, false, {[data.toSlot] = toData})
+
+	if not inventory then return end
+
+	inventory.coords = data.coords
+	Inventory.Drops[dropId] = {coords = inventory.coords, instance = data.instance}
+	playerInventory.changed = true
+
+	TriggerClientEvent('ox_inventory:createDrop', -1, dropId, Inventory.Drops[dropId], playerInventory.open and source, slot)
+
+	if server.loglevel > 0 then
+		lib.logger(playerInventory.id, 'swapSlots', ('%sx %s transferred from "%s" to "%s"'):format(data.count, toData.name, playerInventory.label, dropId))
+	end
+
+	if server.syncInventory then server.syncInventory(playerInventory) end
+
+	return true, {
+		weight = clothesInventory.weight,
+		items = {
+			{
+				item = fromData or { slot = data.fromSlot },
+				inventory = clothesInventory.id
+			}
+		}
+	}
+end
+
 local activeSlots = {}
 
 ---@param source number
@@ -1583,11 +1655,26 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
 	if data.count < 1 then return end
 
 	local playerInventory = Inventory(source)
-
 	if not playerInventory then return end
 
-	local toInventory = (data.toType == 'player' and playerInventory) or Inventory(playerInventory.open)
-	local fromInventory = (data.fromType == 'player' and playerInventory) or Inventory(playerInventory.open)
+	local toInventory
+	local fromInventory
+
+	if data.toType == 'clothing' then
+		local license = GetPlayerIdentifierByType(source, 'license')
+		license = license and license:gsub('license:', '')
+		toInventory =  Inventory('clothing' .. license, source)
+	else
+		toInventory = (data.toType == 'player' and playerInventory) or Inventory(playerInventory.open)
+	end
+
+	if data.fromType == 'clothing' then
+		local license = GetPlayerIdentifierByType(source, 'license')
+		license = license and license:gsub('license:', '')
+		fromInventory =  Inventory('clothing' .. license, source)
+	else
+		fromInventory = (data.fromType == 'player' and playerInventory) or Inventory(playerInventory.open)
+	end
 
 	if not fromInventory or not toInventory then
 		playerInventory:closeInventory()
@@ -1654,6 +1741,9 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
         end
 
         if data.toType == 'newdrop' then
+			if data.fromType == 'clothing' then
+				return dropClothes(source, playerInventory, fromInventory, fromData, data)
+			end
             return dropItem(source, playerInventory, fromData, data)
         end
 
@@ -2423,6 +2513,21 @@ RegisterServerEvent('ox_inventory:giveItem', function(slot, target, count)
 
 		return TriggerClientEvent('ox_lib:notify', fromInventory.id, { type = 'error', description = locale('cannot_give', count, data.label) })
 	end
+end)
+
+RegisterServerEvent('ox_inventory:renameItem', function(data, input)
+	local fromInventory = Inventories[source]
+	if not fromInventory then return end
+
+    local item = fromInventory.items[data.slot]
+    if not item.metadata then
+        item.metadata = {}
+    end
+
+    item.metadata.label = input
+    fromInventory:syncSlotsWithPlayer({
+        { item = item, inventory = fromInventory.id },
+    }, fromInventory.weight)
 end)
 
 local function updateWeapon(source, action, value, slot, specialAmmo)

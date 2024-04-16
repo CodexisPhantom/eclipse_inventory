@@ -21,6 +21,51 @@ shared = {
     police = json.decode(GetConvar('inventory:police', '["police", "sheriff"]')),
 }
 
+shared.clothing = {
+    no_clothing = {
+        ['male'] = {
+            [1] = { drawable = 0, texture = 0, },
+            [3] = { drawable = 15, texture = 0, },
+            [4] = { drawable = 14, texture = 1, },
+            [5] = { drawable = 0, texture = 0, },
+            [6] = { drawable = 5, texture = 0, },
+            [7] = { drawable = 0, texture = 0, },
+            [8] = { drawable = 15, texture = 0, },
+            [9] = { drawable = 0, texture = 0, },
+            [10] = { drawable = 0, texture = 0, },
+            [11] = { drawable = 15, texture = 0, },
+        },
+        ['female'] = {
+            [1] = { drawable = 0, texture = 0, },
+            [3] = { drawable = 15, texture = 0, },
+            [4] = { drawable = 14, texture = 1, },
+            [5] = { drawable = 0, texture = 0, },
+            [6] = { drawable = 5, texture = 0, },
+            [7] = { drawable = 0, texture = 0, },
+            [8] = { drawable = 15, texture = 0, },
+            [9] = { drawable = 0, texture = 0, },
+            [10] = { drawable = 0, texture = 0, },
+            [11] = { drawable = 15, texture = 0, },
+        }
+    },
+    no_props = {
+        ['male'] = {
+            [0] = { drawable = -1, texture = -1, },
+            [1] = { drawable = -1, texture = -1, },
+            [2] = { drawable = -1, texture = -1, },
+            [6] = { drawable = -1, texture = -1, },
+            [7] = { drawable = -1, texture = -1, },
+        },
+        ['female'] = {
+            [0] = { drawable = -1, texture = -1, },
+            [1] = { drawable = -1, texture = -1, },
+            [2] = { drawable = -1, texture = -1, },
+            [6] = { drawable = -1, texture = -1, },
+            [7] = { drawable = -1, texture = -1, },
+        },
+    },
+}
+
 do
     if type(shared.police) == 'string' then
         shared.police = { shared.police }

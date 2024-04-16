@@ -9,9 +9,11 @@ require 'modules.pefcl.server'
 
 local TriggerEventHooks = require 'modules.hooks.server'
 local db = require 'modules.mysql.server'
+local clothing = require 'modules.clothing.server'
 local Items = require 'modules.items.server'
 local Inventory = require 'modules.inventory.server'
 
+require 'modules.clothing.hook'
 require 'modules.crafting.server'
 require 'modules.shops.server'
 
@@ -25,6 +27,8 @@ function server.setPlayerInventory(player, data)
 	if not data then
 		data = db.loadPlayer(player.identifier)
 	end
+
+	clothing.getClothesInv(player.source)
 
 	local inventory = {}
 	local totalWeight = 0

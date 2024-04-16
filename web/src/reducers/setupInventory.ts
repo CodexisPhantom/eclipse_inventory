@@ -7,10 +7,11 @@ export const setupInventoryReducer: CaseReducer<
   State,
   PayloadAction<{
     leftInventory?: Inventory;
+    clothesInventory?: Inventory;
     rightInventory?: Inventory;
   }>
 > = (state, action) => {
-  const { leftInventory, rightInventory } = action.payload;
+  const { leftInventory, clothesInventory, rightInventory } = action.payload;
   const curTime = Math.floor(Date.now() / 1000);
 
   if (leftInventory)
@@ -18,6 +19,25 @@ export const setupInventoryReducer: CaseReducer<
       ...leftInventory,
       items: Array.from(Array(leftInventory.slots), (_, index) => {
         const item = Object.values(leftInventory.items).find((item) => item?.slot === index + 1) || {
+          slot: index + 1,
+        };
+
+        if (!item.name) return item;
+
+        if (typeof Items[item.name] === 'undefined') {
+          getItemData(item.name);
+        }
+
+        item.durability = itemDurability(item.metadata, curTime);
+        return item;
+      }),
+    };
+
+  if (clothesInventory)
+    state.clothesInventory = {
+      ...clothesInventory,
+      items: Array.from(Array(clothesInventory.slots), (_, index) => {
+        const item = Object.values(clothesInventory.items).find((item) => item?.slot === index + 1) || {
           slot: index + 1,
         };
 

@@ -1,22 +1,23 @@
-$mainColor: #22232c;
-$textColor: #c1c2c5;
-$mainFont: Roboto;
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 
-$secondaryColor: rgba(12, 12, 12, 0.4);
-$secondaryColorHighlight: #33343F;
+$mainColor: rgba(0, 0, 0, 0.5);
+$textColor: #FFF;
+$mainFont: Quicksand;
+
+$secondaryColor: rgba(0, 0, 0, 0.25);
+$secondaryColorHighlight: rgba(0, 0, 0, 0.5);
 $secondaryColorLight: rgba(0, 0, 0, 0.5);
-$secondaryColorDark: rgba(12, 12, 12, 0.8);
+$secondaryColorDark: rgba(0, 0, 0, 0.5);
 
 $gridCols: 5;
-$gridRows: 5;
-$gridSize: 10.2vh;
-$gridGap: 2px;
-$containerSize: calc(#{$gridRows} * #{$gridSize + 0.22vh} + #{$gridRows} * #{$gridGap});
+$gridRows: 7;
+$gridSize: 9.5vh;
+$gridGap: 5px;
+$containerSize: calc(#{$gridRows} * #{$gridSize + 0.25vh} + #{$gridRows} * #{$gridGap});
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
-    'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Quicksand', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100vh;
@@ -30,7 +31,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: 'Quicksand', sans-serif;
 }
 
 ::-webkit-scrollbar {
@@ -121,24 +122,30 @@ button:active {
   justify-content: center;
   align-items: center;
   height: 100%;
-
-  gap: 20px;
+  gap: 700px;
 }
 
 .inventory-control {
+  position: absolute;
+  top: 92.5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
   .inventory-control-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 20px;
     justify-content: center;
     align-items: center;
+    gap: 10px;
   }
 
   .inventory-control-input {
     transition: 200ms;
-    padding: 16px 8px;
     border-radius: 2.5%;
     font-family: $mainFont;
     font-size: 16px;
@@ -146,10 +153,18 @@ button:active {
     outline: none;
     border: none;
     color: #fff;
+    width: 250px;
+    height: 60px;
     background-color: $secondaryColor;
     &:focus-within {
       background-color: $secondaryColorDark;
     }
+  }
+
+  .inventory-control-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
   }
 
   .inventory-control-button {
@@ -157,12 +172,12 @@ button:active {
     color: #fff;
     background-color: $secondaryColor;
     transition: 200ms;
-    padding: 12px 8px;
+    width: 200px;
+    height: 50px;
     border-radius: 2.5%;
     border: none;
     text-transform: uppercase;
     font-family: $mainFont;
-    width: 100%;
     font-weight: 500;
     &:hover {
       background-color: $secondaryColorDark;
@@ -262,6 +277,7 @@ button:active {
   flex-direction: column;
   gap: calc($gridGap * 2);
 }
+
 .inventory-grid-header-wrapper {
   display: flex;
   flex-direction: row;
@@ -278,6 +294,36 @@ button:active {
   grid-auto-rows: $gridSize + 0.22vh;
   gap: $gridGap;
   overflow-y: scroll;
+}
+
+// inventory clothes
+.inventory-clothes-wrapper {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 600px;
+  height: 800px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .inventory-clothes-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-direction: column;
+  }
+
+  .inventory-clothes-outfit {
+    position: absolute;
+    top: 87.5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
 
 // inventory slots
@@ -383,6 +429,33 @@ button:active {
   }
 }
 
+// inventory clothes slots
+.inventory-clothes-slot {
+  background-color: $secondaryColor;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 2.5%;
+  image-rendering: -webkit-optimize-contrast;
+  position: relative;
+  background-size: 7vh;
+  color: $textColor;
+  border-color: rgba(0, 0, 0, 0.2);
+  border-style: inset;
+  border-width: 1px;
+  width: $gridSize - 2vh;
+  height: $gridSize - 2vh;
+  overflow-y: scroll;
+}
+
+.item-clothes-slot-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  p {
+    font-size: 12px;
+  }
+}
 
 .tooltip-wrapper {
   pointer-events: none;
@@ -551,4 +624,12 @@ button:active {
 .transition-slide-up-exit-active {
   transform: translateY(200px);
   transition: all 200ms;
+}
+
+@keyframes tilt-shaking {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(0eg); }
+  75% { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
 }

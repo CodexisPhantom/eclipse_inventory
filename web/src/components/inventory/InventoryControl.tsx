@@ -8,6 +8,7 @@ import { onGive } from '../../dnd/onGive';
 import { fetchNui } from '../../utils/fetchNui';
 import { Locale } from '../../store/locale';
 import UsefulControls from './UsefulControls';
+import { onRename } from '../../dnd/onRename';
 
 const InventoryControl: React.FC = () => {
   const itemAmount = useAppSelector(selectItemAmount);
@@ -29,6 +30,13 @@ const InventoryControl: React.FC = () => {
     },
   }));
 
+  const [, rename] = useDrop<DragSource, void, any>(() => ({
+    accept: 'SLOT',
+    drop: (source) => {
+      source.inventory === 'player' && onRename(source.item);
+    },
+  }));
+
   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.target.valueAsNumber =
       isNaN(event.target.valueAsNumber) || event.target.valueAsNumber < 0 ? 0 : Math.floor(event.target.valueAsNumber);
@@ -38,6 +46,7 @@ const InventoryControl: React.FC = () => {
   return (
     <>
       <UsefulControls infoVisible={infoVisible} setInfoVisible={setInfoVisible} />
+
       <div className="inventory-control">
         <div className="inventory-control-wrapper">
           <input
@@ -47,15 +56,17 @@ const InventoryControl: React.FC = () => {
             onChange={inputHandler}
             min={0}
           />
-          <button className="inventory-control-button" ref={use}>
-            {Locale.ui_use || 'Use'}
-          </button>
-          <button className="inventory-control-button" ref={give}>
-            {Locale.ui_give || 'Give'}
-          </button>
-          <button className="inventory-control-button" onClick={() => fetchNui('exit')}>
-            {Locale.ui_close || 'Close'}
-          </button>
+          {/* <div className='inventory-control-buttons'>
+            <button className="inventory-control-button" ref={use}>
+              {Locale.ui_use || 'Use'}
+            </button>
+            <button className="inventory-control-button" ref={give}>
+              {Locale.ui_give || 'Give'}
+            </button>
+            <button className="inventory-control-button" ref={rename}>
+              {Locale.ui_give || 'Rename'}
+            </button>
+          </div> */}
         </div>
       </div>
 

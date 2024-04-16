@@ -93,20 +93,50 @@ export const findAvailableSlot = (item: Slot, data: ItemData, items: Slot[]) => 
   return stackableSlot || items.find((target) => target.name === undefined);
 };
 
+// export const getTargetInventory = (
+//   state: State,
+//   sourceType: Inventory['type'],
+//   targetType?: Inventory['type']
+// ): { sourceInventory: Inventory; targetInventory: Inventory } => ({
+//   sourceInventory: sourceType === InventoryType.PLAYER ? state.leftInventory : (sourceType === InventoryType.CLOTHING ? state.clothesInventory : state.rightInventory),
+//   targetInventory: targetType ? targetType === InventoryType.PLAYER
+//       ? state.leftInventory
+//       : (targetType === InventoryType.CLOTHING ? state.clothesInventory : state.rightInventory)
+//     : sourceType === InventoryType.PLAYER
+//       ? state.rightInventory
+//       : state.leftInventory,
+// });
+
 export const getTargetInventory = (
   state: State,
   sourceType: Inventory['type'],
   targetType?: Inventory['type']
-): { sourceInventory: Inventory; targetInventory: Inventory } => ({
-  sourceInventory: sourceType === InventoryType.PLAYER ? state.leftInventory : state.rightInventory,
-  targetInventory: targetType
-    ? targetType === InventoryType.PLAYER
-      ? state.leftInventory
-      : state.rightInventory
-    : sourceType === InventoryType.PLAYER
-    ? state.rightInventory
-    : state.leftInventory,
-});
+): { sourceInventory: Inventory; targetInventory: Inventory } => {
+  if (sourceType === InventoryType.CLOTHING) {
+    if (!targetType) {
+      return { sourceInventory: state.clothesInventory, targetInventory: state.leftInventory };
+    }
+    return { sourceInventory: state.clothesInventory, targetInventory: (targetType === InventoryType.PLAYER ? state.leftInventory : state.rightInventory) };
+  }
+
+  if (targetType === InventoryType.CLOTHING) {
+    if (!sourceType) {
+      return { sourceInventory: state.leftInventory, targetInventory: state.clothesInventory };
+    }
+    return { sourceInventory: (sourceType === InventoryType.PLAYER ? state.leftInventory : state.rightInventory), targetInventory: state.clothesInventory };
+  }
+
+  return {
+    sourceInventory: sourceType === InventoryType.PLAYER ? state.leftInventory : state.rightInventory,
+    targetInventory: targetType
+      ? targetType === InventoryType.PLAYER
+        ? state.leftInventory
+        : state.rightInventory
+      : sourceType === InventoryType.PLAYER
+      ? state.rightInventory
+      : state.leftInventory,
+  };
+};
 
 export const itemDurability = (metadata: any, curTime: number) => {
   // sorry dunak

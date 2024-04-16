@@ -43,7 +43,7 @@ debugData([
             slot: 4,
             name: 'water',
             weight: 100,
-            count: 1,
+            count: 20,
             metadata: { description: 'Generic item description' },
           },
           { slot: 5, name: 'water', weight: 100, count: 1 },
@@ -57,6 +57,17 @@ debugData([
               imageurl: 'https://i.imgur.com/2xHhTTz.png',
             },
           },
+        ],
+      },
+      clothesInventory: {
+        id: 'clothingCITIZENID',
+        type: 'clothing',
+        slots: 17,
+        label: 'Vêtements',
+        weight: 100,
+        maxWeight: 100000,
+        items: [
+          { slot: 1, name: 'clothes_mask', weight: 0, metadata: { type: 'prop', drawable: 12, texture: 1, component: 1, image: 'clothes/male/male_1_12' }, },
         ],
       },
       rightInventory: {
@@ -119,7 +130,7 @@ const App: React.FC = () => {
   );
 };
 
-addEventListener("dragstart", function(event) {
+addEventListener("dragstart", function (event) {
   event.preventDefault()
 })
 

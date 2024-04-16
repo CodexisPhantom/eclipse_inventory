@@ -35,13 +35,21 @@ ui_page 'web/build/index.html'
 files {
     'client.lua',
     'server.lua',
+
     'locales/*.json',
+
     'web/build/index.html',
     'web/build/assets/*.js',
     'web/build/assets/*.css',
+
     'web/images/*.png',
+    'web/images/clothes/empty/*.png',
+    'web/images/clothes/male/*.png',
+    'web/images/clothes/female/*.png',
+
     'modules/**/shared.lua',
     'modules/**/client.lua',
     'modules/bridge/**/client.lua',
+
     'data/*.lua',
 }
