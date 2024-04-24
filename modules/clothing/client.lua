@@ -19,6 +19,7 @@ function client.syncClothes()
 end
 
 lib.callback.register('ox_inventory:getPlayerClothes', function()
+	local top = {}
 	local clothes = {}
 
 	local sex = isMaleOrFemale()
@@ -27,17 +28,32 @@ lib.callback.register('ox_inventory:getPlayerClothes', function()
 
 	for _, value in pairs(components) do
         if value.component_id ~= 0 and value.component_id ~= 2 then
-            local component = shared.clothing.no_clothing[sex][value.component_id]
+            if value.component_id == 3 or value.component_id == 5 or value.component_id == 11 then
+                local component = shared.clothing.no_clothing[sex][value.component_id]
 
-            if component.drawable ~= value.drawable then
-                clothes[#clothes+1] = {
-                    type = 'component',
-                    drawable = value.drawable,
-                    texture = value.texture,
-                    component = value.component_id,
-                }
+                if component.drawable ~= value.drawable then
+                    top[#top+1] = {
+                        type = 'component',
+                        drawable = value.drawable,
+                        texture = value.texture,
+                        component = value.component_id,
+                    }
+                else
+                    top[#top+1] = {}
+                end
             else
-                clothes[#clothes+1] = {}
+                local component = shared.clothing.no_clothing[sex][value.component_id]
+
+                if component.drawable ~= value.drawable then
+                    clothes[#clothes+1] = {
+                        type = 'component',
+                        drawable = value.drawable,
+                        texture = value.texture,
+                        component = value.component_id,
+                    }
+                else
+                    clothes[#clothes+1] = {}
+                end
             end
         end
 	end
@@ -57,7 +73,7 @@ lib.callback.register('ox_inventory:getPlayerClothes', function()
         end
 	end
 
-	return sex, clothes
+	return sex, top, clothes
 end)
 
 lib.callback.register('ox_inventory:addClothing', function(data)

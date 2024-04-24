@@ -7,22 +7,19 @@ CreateThread(function()
 end)
 
 local slotItems = {
-    [1] = "clothes_torsos",
-    [2] = "clothes_tshirts",
-    [3] = "clothes_hands",
-    [4] = "clothes_bags",
-    [5] = "clothes_armors",
-    [6] = "clothes_pants",
-    [7] = "clothes_shoes",
+    [2] = "clothes_bags",
+    [3] = "clothes_armors",
+    [4] = "clothes_pants",
+    [5] = "clothes_shoes",
+    [6] = "clothes_decals",
 
-    [9] = "clothes_hats",
-    [10] = "clothes_masks",
-    [11] = "clothes_glasses",
-    [12] = "clothes_ears",
-    [13] = "clothes_chains",
-    [14] = "clothes_watches",
-    [15] = "clothes_bracelets",
-    [16] = "clothes_decals",
+    [8] = "clothes_hats",
+    [9] = "clothes_masks",
+    [10] = "clothes_glasses",
+    [11] = "clothes_ears",
+    [12] = "clothes_chains",
+    [13] = "clothes_watches",
+    [14] = "clothes_bracelets",
 }
 
 local idToSlot = {
@@ -39,8 +36,8 @@ local idToSlot = {
     [12] = 9,
     [13] = 11,
     [14] = 12,
-    [15] = 14,
-    [16] = 15,
+    [15] = 13,
+    [16] = 14,
 }
 
 function clothing.imageExists(image)
@@ -70,10 +67,10 @@ RegisterNetEvent('ox_inventory:syncPlayerClothes', function()
     local clothes = clothing.getClothesInv(src)
     if not clothes then return end
 
-    local playerSex, playerClothes = lib.callback.await('ox_inventory:getPlayerClothes', source)
+    local playerSex, playerTop, playerClothes = lib.callback.await('ox_inventory:getPlayerClothes', source)
     Inventory.Clear(clothes, 'clothes_outfits')
 
-    for i = 1, 14 do
+    for i = 2, 14 do
         local cloth = playerClothes[i]
 
         if i > 7 then
@@ -113,6 +110,14 @@ lib.callback.register('ox_inventory:getInventoryClothes', function(source)
         items = clothes.items or {}
     } or false
 end)
+
+function clothing.addTop(payload)
+    return lib.callback.await('ox_inventory:addTop', payload.source, payload.fromSlot.metadata)
+end
+
+function clothing.removeTop(payload)
+    return lib.callback.await('ox_inventory:removeTop', payload.source, payload.fromSlot.metadata)
+end
 
 function clothing.addClothing(payload)
     return lib.callback.await('ox_inventory:addClothing', payload.source, payload.fromSlot.metadata)
