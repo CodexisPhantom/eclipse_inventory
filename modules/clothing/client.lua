@@ -28,7 +28,7 @@ lib.callback.register('ox_inventory:getPlayerClothes', function()
 
 	for _, value in pairs(components) do
         if value.component_id ~= 0 and value.component_id ~= 2 then
-            if value.component_id == 3 or value.component_id == 5 or value.component_id == 11 then
+            if value.component_id == 3 or value.component_id == 8 or value.component_id == 11 then
                 local component = shared.clothing.no_clothing[sex][value.component_id]
 
                 if component.drawable ~= value.drawable then
@@ -121,6 +121,50 @@ lib.callback.register('ox_inventory:removeClothing', function(data)
             drawable = prop.drawable,
             texture = prop.texture
         })
+    end
+
+    client.syncClothes()
+
+    return true
+end)
+
+lib.callback.register('ox_inventory:addTop', function(data)
+    if not data then
+        return false
+    end
+
+    for _, value in ipairs(data) do
+        if value.type == 'component' then
+            appearance:setPedComponent(cache.ped, {
+                component_id = value.component,
+                drawable = value.drawable,
+                texture = value.texture
+            })
+        elseif value.type == 'prop' then
+            appearance:setPedProp(cache.ped, {
+                prop_id = value.prop,
+                drawable = value.drawable,
+                texture = value.texture
+            })
+        end
+    end
+
+    client.syncClothes()
+
+    return true
+end)
+
+lib.callback.register('ox_inventory:removeTop', function()
+	local sex = isMaleOrFemale()
+
+    for component, value in ipairs(shared.clothing.no_clothing[sex]) do
+        if component == 3 or component == 5 or component == 11 then
+            appearance:setPedComponent(cache.ped, {
+                component_id = component,
+                drawable = value.drawable,
+                texture = value.texture
+            })
+        end
     end
 
     client.syncClothes()

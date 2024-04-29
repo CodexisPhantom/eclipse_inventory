@@ -7,6 +7,7 @@ CreateThread(function()
 end)
 
 local slotItems = {
+    [1] = "clothes_torsos",
     [2] = "clothes_bags",
     [3] = "clothes_armors",
     [4] = "clothes_pants",
@@ -23,21 +24,18 @@ local slotItems = {
 }
 
 local idToSlot = {
-    [1] = 10,
-    [2] = 3,
-    [3] = 6,
+    [1] = 9,
     [4] = 4,
-    [5] = 7,
-    [6] = 13,
-    [7] = 2,
-    [9] = 5,
-    [10] = 16,
-    [11] = 1,
-    [12] = 9,
-    [13] = 11,
-    [14] = 12,
-    [15] = 13,
-    [16] = 14,
+    [5] = 2,
+    [6] = 5,
+    [7] = 12,
+    [9] = 3,
+    [10] = 6,
+    [13] = 8,
+    [14] = 10,
+    [15] = 11,
+    [16] = 13,
+    [17] = 14,
 }
 
 function clothing.imageExists(image)
@@ -70,20 +68,36 @@ RegisterNetEvent('ox_inventory:syncPlayerClothes', function()
     local playerSex, playerTop, playerClothes = lib.callback.await('ox_inventory:getPlayerClothes', source)
     Inventory.Clear(clothes, 'clothes_outfits')
 
-    for i = 2, 14 do
-        local cloth = playerClothes[i]
+    local top = false
 
-        if i > 7 then
-            i += 1
+    for i = 1, #playerTop do
+        local component = playerTop[i]
+        if component then
+            top[#top + 1] = {
+                type = 'component',
+                component = component.component,
+                drawable = component.drawable,
+                texture = component.texture,
+            }
         end
+    end
+
+    if top then
+        Inventory.AddItem(clothes, "clothes_torsos", 1, top, 1)
+    end
+
+    for id, slot in pairs(idToSlot) do
+        local cloth = playerClothes[id]
 
         if cloth and next(cloth) then
             if cloth.type == 'component' then
-                cloth.image = ('clothes/%s/%s_%s_%s'):format(playerSex, playerSex, cloth.component, cloth.drawable) .. (cloth.texture ~= 0 and ('_%s'):format(cloth.texture) or '')
+                cloth.image = ('clothes/%s/%s_%s_%s'):format(playerSex, playerSex, cloth.component, cloth.drawable) ..
+                (cloth.texture ~= 0 and ('_%s'):format(cloth.texture) or '')
             else
-                cloth.image = ('clothes/%s/%s_prop_%s_%s'):format(playerSex, playerSex, cloth.prop, cloth.drawable) .. (cloth.texture ~= 0 and ('_%s'):format(cloth.texture) or '')
+                cloth.image = ('clothes/%s/%s_prop_%s_%s'):format(playerSex, playerSex, cloth.prop, cloth.drawable) ..
+                (cloth.texture ~= 0 and ('_%s'):format(cloth.texture) or '')
             end
-            Inventory.AddItem(clothes, tostring(slotItems[idToSlot[i]]), 1, cloth, tonumber(idToSlot[i]))
+            Inventory.AddItem(clothes, slotItems[slot], 1, cloth, slot)
         end
     end
 

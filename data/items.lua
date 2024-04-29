@@ -222,4 +222,103 @@ return {
 		label = 'Scrap Metal',
 		weight = 80,
 	},
+
+    ['clothes_hats'] = {
+		label = 'Chapeau',
+		description = 'Un vêtement cool',
+		weight = 0,
+		stack = false,
+	},
+
+	['clothes_masks'] = {
+		label = 'Masque',
+		description = 'Un vêtement cool',
+		weight = 0,
+		stack = false,
+	},
+
+	['clothes_glasses'] = {
+		label = 'Lunettes',
+		description = 'Un vêtement cool',
+		weight = 0,
+		stack = false,
+	},
+
+	['clothes_ears'] = {
+		label = 'Oreillete',
+		description = 'Un vêtement cool',
+		weight = 0,
+		stack = false,
+	},
+
+	['clothes_chains'] = {
+		label = 'Collier',
+		description = 'Un vêtement cool',
+		weight = 0,
+		stack = false,
+	},
+
+	['clothes_watches'] = {
+		label = 'Montre',
+		description = 'Un vêtement cool',
+		weight = 0,
+		stack = false,
+	},
+
+	['clothes_bracelets'] = {
+		label = 'Bracelets',
+		description = 'Un vêtement cool',
+		weight = 0,
+		stack = false,
+	},
+
+	['clothes_decals'] = {
+		label = 'Accéssoires',
+		description = 'Un vêtement cool',
+		weight = 0,
+		stack = false,
+	},
+
+	['clothes_torsos'] = {
+		label = 'Torse',
+		description = 'Un vêtement cool',
+		weight = 0,
+		stack = false,
+	},
+
+	['clothes_bags'] = {
+		label = 'Sac à dos',
+		description = 'Un vêtement cool',
+		weight = 0,
+		stack = false,
+	},
+
+	['clothes_armors'] = {
+		label = 'Gilet par balle',
+		description = 'Un vêtement cool',
+		weight = 0,
+		stack = false,
+	},
+
+	['clothes_pants'] = {
+		label = 'Pantalon',
+		description = 'Un vêtement cool',
+		weight = 0,
+		stack = false,
+	},
+
+	['clothes_shoes'] = {
+		label = 'Chaussures',
+		description = 'Un vêtement cool',
+		weight = 0,
+		stack = false,
+	},
+
+	['clothes_outfits'] = {
+		label = 'Tenue',
+		description = 'Une tenue cool',
+		weight = 0,
+		stack = false,
+	},
+
 }
